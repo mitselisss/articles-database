@@ -31,4 +31,5 @@ urlpatterns = [
     ),
     path('api/user/', include('user.urls')),
     path('api/article/', include('article.urls')),
+    path('api/tag/', include('tag.urls')),
 ]

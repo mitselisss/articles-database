@@ -14,11 +14,13 @@ class ArticleListCreateView(generics.ListCreateAPIView):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['publication_date', 'author']
+    filterset_fields = ['publication_date', 'authors', 'tags']
     search_fields = ['title', 'abstract', 'main_text']
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        article = serializer.save()
+        if self.request.user not in article.authors.all():
+            article.authors.add(self.request.user)
 
     def get_permissions(self):
         if self.request.method == 'POST':
