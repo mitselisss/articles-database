@@ -27,7 +27,7 @@ class PublicTagApiTests(TestCase):
         """Test authorization required for tag creation."""
         payload = {'name': 'sample_tag'}
         res = self.client.post(TAG_LIST_URL, payload)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list_tags(self):
         """Test that anyone can list tags."""
@@ -38,7 +38,7 @@ class PublicTagApiTests(TestCase):
         tags = Tag.objects.all()
         serializer = TagSerializer(tags, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.data["results"], serializer.data)
 
 
 class PrivateTagApiTests(TestCase):

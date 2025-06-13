@@ -8,7 +8,7 @@ from tag.serializers import TagSerializer
 
 class TagListCreateView(generics.ListCreateAPIView):
     """View for listing and creating tags."""
-    queryset = Tag.objects.all()
+    queryset = Tag.objects.all().order_by('id')
     serializer_class = TagSerializer
 
     def get_permissions(self):
@@ -18,7 +18,7 @@ class TagListCreateView(generics.ListCreateAPIView):
 
 
 class TagDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Tag.objects.all()
+    queryset = Tag.objects.all().order_by('id')
     serializer_class = TagSerializer
 
     def get_permissions(self):

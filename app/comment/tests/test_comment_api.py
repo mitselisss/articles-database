@@ -56,7 +56,7 @@ class PublicCommentApiTests(TestCase):
             'article': article.id
         }
         res = self.client.post(COMMENT_LIST_URL, payload)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list_comments(self):
         """Test everyone can list comments."""
@@ -69,7 +69,7 @@ class PublicCommentApiTests(TestCase):
         comments = Comment.objects.all()
         serializer = CommentSerializer(comments, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.data["results"], serializer.data)
 
 
 class PrivateTagApiTests(TestCase):

@@ -12,10 +12,12 @@ from datetime import date
 
 
 ARTICLES_LIST_URL = reverse('article:article-list')
+ARTICLE_DOWNLOAD_URL = reverse('article:article-download')
 
 
 def create_user(**params):
     return get_user_model().objects.create(**params)
+
 
 def create_article(authors, **params):
     default = {
@@ -45,7 +47,7 @@ class PublicArticleApiTest(TestCase):
             'publication_date': '2025-01-01'
         }
         res = self.client.post(ARTICLES_LIST_URL, payload)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_list_articles(self):
         """Test everyone can list articls."""
@@ -61,7 +63,7 @@ class PublicArticleApiTest(TestCase):
         articles = Article.objects.all()
         serializer = ArticleSerializer(articles, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.data["results"], serializer.data)
 
     def test_filter_articles_by_authors(self):
         """Test filtering articles by author(s)."""
@@ -85,7 +87,7 @@ class PublicArticleApiTest(TestCase):
         articles = Article.objects.filter(authors=user1)
         serializer = ArticleSerializer(articles, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.data["results"], serializer.data)
 
     def test_filter_articles_by_tag(self):
         """Test filtering articles by tag(s)."""
@@ -104,8 +106,8 @@ class PublicArticleApiTest(TestCase):
         article2.tags.add(tag2)
 
         res = self.client.get(ARTICLES_LIST_URL, {'tags': tag1.id})
-        self.assertEqual(len(res.data), 1)
-        self.assertEqual(res.data[0]['title'], 'Sample title1')
+        self.assertEqual(len(res.data["results"]), 1)
+        self.assertEqual(res.data["results"][0]['title'], 'Sample title1')
 
     def test_filter_articles_by_date(self):
         """Test filtering articles by date."""
@@ -123,7 +125,7 @@ class PublicArticleApiTest(TestCase):
         articles = Article.objects.filter(publication_date=date(2025, 6, 10))
         serializer = ArticleSerializer(articles, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.data["results"], serializer.data)
 
     def test_keyword_search(self):
         """Test searching for a keyword."""
@@ -207,3 +209,22 @@ class PrivateArticleApiTest(TestCase):
         self.assertEqual(res.data['title'], article.title)
         self.assertEqual(res.data['abstract'], article.abstract)
         self.assertEqual(res.data['publication_date'], str(article.publication_date))
+
+
+class ArticleDownloadCSVTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = create_user(
+            username='testuser',
+            email='test@example.com',
+            password='pass123')
+        self.article = create_article(authors=self.user)
+
+    def test_download_csv_returns_csv_file(self):
+        """Test downloading article list as CSV works and returns correct content type."""
+        res = self.client.get(ARTICLE_DOWNLOAD_URL)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res['Content-Type'], 'text/csv')
+        self.assertIn('attachment; filename="articles.csv"', res['Content-Disposition'])
+        self.assertIn('Sample Title', res.content.decode())

@@ -9,11 +9,10 @@ from comment.permissions import IsCommentAuthor
 
 class CommentListCreateView(generics.ListCreateAPIView):
     """View for listing and creating tags."""
-    queryset = Comment.objects.all()
+    queryset = Comment.objects.all().order_by('id')
     serializer_class = CommentSerializer
 
     def perform_create(self, serializer):
-        print(f"Creating as user: {self.request.user} (ID: {self.request.user.id})")
         serializer.save(author=self.request.user)
 
     def get_permissions(self):
@@ -23,7 +22,7 @@ class CommentListCreateView(generics.ListCreateAPIView):
 
 
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Comment.objects.all()
+    queryset = Comment.objects.all().order_by('id')
     serializer_class = CommentSerializer
 
     def get_permissions(self):
