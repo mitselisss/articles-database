@@ -3,7 +3,7 @@ Tests for models.
 """
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from core.models import Article, Tag
+from core.models import Article, Tag, Comment
 from datetime import date
 
 
@@ -78,8 +78,8 @@ class TagModelTest(TestCase):
     """Test for Tag model."""
     def test_create_tag(self):
         """Test creating a tag is successful."""
-        tag = Tag.objects.create(name='Science')
-        self.assertEqual(str(tag.name), 'Science')
+        tag = Tag.objects.create(name='Sample_tag')
+        self.assertEqual(str(tag.name), 'Sample_tag')
 
     def test_update_tag(self):
         """Test updating a tag name."""
@@ -95,3 +95,46 @@ class TagModelTest(TestCase):
         tag.delete()
         exists = Tag.objects.filter(id=tag_id).exists()
         self.assertFalse(exists)
+
+
+class CommentModelTest(TestCase):
+    """Test for Comment model."""
+    def test_create_comment(self):
+        """Test creating a comment."""
+        user = get_user_model().objects.create_user('tester', 'tester@test.com', 'pass')
+        article = Article.objects.create(
+            title='Test Article',
+            abstract='Test abstract',
+            publication_date=date.today()
+        )
+        article.authors.set([user])
+        comment = Comment.objects.create(author=user, article=article, content='Nice one!')
+        self.assertEqual(str(comment), 'Nice one!')
+        self.assertEqual(comment.author, user)
+        self.assertEqual(comment.article, article)
+
+    def test_update_comment(self):
+        """Test updating a comment."""
+        user = get_user_model().objects.create_user('tester', 'tester@test.com', 'pass')
+        comment = Comment.objects.create(author=user, content='original')
+        comment.content = 'updated'
+        comment.save()
+        self.assertEqual(comment.content, 'updated')
+
+    def test_delete_comment(self):
+        """Test deleting a comment."""
+        user = get_user_model().objects.create_user('tester', 'tester@test.com', 'pass')
+        comment = Comment.objects.create(author=user, content='ToDelete')
+        comment_id = comment.id
+        comment.delete()
+        exists = Comment.objects.filter(id=comment_id).exists()
+        self.assertFalse(exists)
+
+    def test_comment_string_representation(self):
+        user = get_user_model().objects.create_user(
+            username='john',
+            email='john@example.com',
+            password='pass1234'
+        )
+        comment = Comment.objects.create(content='this is a string!', author=user)
+        self.assertEqual(str(comment), 'this is a string!')

@@ -14,6 +14,16 @@ class Tag(models.Model):
         return self.name
 
 
+class Comment(models.Model):
+    """Commend model."""
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    article = models.ForeignKey('Article', on_delete=models.CASCADE, related_name='comments', null=True)
+
+    def __str__(self):
+        return self.content
+
+
 class Article(models.Model):
     """Article model."""
     authors = models.ManyToManyField(User, related_name="articles")
@@ -22,7 +32,6 @@ class Article(models.Model):
     abstract = models.TextField(default="Abstract to be added")
     publication_date = models.DateField()
     tags = models.ManyToManyField(Tag, related_name="tags")
-    # TODO: Add comments (related model)
 
     def __str__(self):
         return self.title

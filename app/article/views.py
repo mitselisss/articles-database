@@ -18,6 +18,7 @@ class ArticleListCreateView(generics.ListCreateAPIView):
     search_fields = ['title', 'abstract', 'main_text']
 
     def perform_create(self, serializer):
+        print(f"Creating as user: {self.request.user} (ID: {self.request.user.id})")
         article = serializer.save()
         if self.request.user not in article.authors.all():
             article.authors.add(self.request.user)

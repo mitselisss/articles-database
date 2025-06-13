@@ -22,6 +22,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
     def create(self, validated_data):
+        print(f"[Serializer] In create() - Request user: {self.context['request'].user}")
         authors = validated_data.pop('authors', [])
         tags = validated_data.pop('tags', [])
         article = Article.objects.create(**validated_data)
