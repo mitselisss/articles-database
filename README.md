@@ -9,6 +9,7 @@ A simple article management API built with Django and DRF.
 After this command the web app is ready at:
 
 [127.0.0.1:8000/api/docs/](127.0.0.1:8000/api/docs/)
+
 [127.0.0.1:8000/admin/](127.0.0.1:8000/admin/)
 
 but a superuser must be made via the command:
