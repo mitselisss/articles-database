@@ -25,6 +25,7 @@ After the succesfull user creation the user must log in to use all the features 
 the credentials. A token will be generated. Copy and past it at Authorize (upper right corner) as: Token <your_token> and hit authorize.
 To check if the correct user is logged in go to GET ​/api​/user​/me​/ and you should see your username and email.
 
+## How to use
 Now that you are authorized you can:
 - List all articles in the databse or filter and then list based on author's id, tag, data, or keyword via the GET /api​/article​/ (You dont have to be authorized for this feature)
 - Create an article via the POST ​/api​/article​/
