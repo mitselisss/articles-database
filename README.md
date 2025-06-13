@@ -4,10 +4,16 @@
 A simple article management API built with Django and DRF.
 
 ## How to run
-```bash sudo docker compose run --build```
+```sudo docker compose run --build```
 
-After this command the web app is ready at 127.0.0.1:8000/api/docs/ or at 127.0.0.1:8000/admin/ but a superuser must be made via the command:
-sudo docker compose run --rm sh -c "python manage.py createsuperuser" and follow the instructions.
+After this command the web app is ready at:
+
+[127.0.0.1:8000/api/docs/](127.0.0.1:8000/api/docs/)
+[127.0.0.1:8000/admin/](127.0.0.1:8000/admin/)
+
+but a superuser must be made via the command:
+```sudo docker compose run --rm sh -c "python manage.py createsuperuser"```
+and follow the instructions.
 
 The 127.0.0.1:8000/api/docs/ page is the swagger where a user can interact with the app.
 
