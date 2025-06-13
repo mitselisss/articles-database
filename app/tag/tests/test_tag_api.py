@@ -34,7 +34,7 @@ class PublicTagApiTests(TestCase):
         Tag.objects.create(name='test1')
         Tag.objects.create(name='test2')
 
-        res =  self.client.get(TAG_LIST_URL)
+        res = self.client.get(TAG_LIST_URL)
         tags = Tag.objects.all()
         serializer = TagSerializer(tags, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)

@@ -56,7 +56,14 @@ class ArticleDownloadCSVView(generics.ListAPIView):
         response['Content-Disposition'] = 'attachment; filename="articles.csv"'
 
         writer = csv.writer(response)
-        writer.writerow(['ID', 'Title', 'Abstract', 'Publication Date', 'Authors', 'Tags'])
+        writer.writerow([
+            'ID',
+            'Title',
+            'Abstract',
+            'Publication Date',
+            'Authors',
+            'Tags'
+        ])
 
         for article in queryset:
             writer.writerow([

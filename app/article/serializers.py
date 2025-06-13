@@ -6,6 +6,7 @@ from core.models import Article, Tag
 from django.contrib.auth import get_user_model
 from tag.serializers import TagSerializer
 
+
 class ArticleSerializer(serializers.ModelSerializer):
     """Serializer for articles."""
     authors = serializers.PrimaryKeyRelatedField(
@@ -14,15 +15,20 @@ class ArticleSerializer(serializers.ModelSerializer):
     )
     tags = TagSerializer(many=True, required=False)
 
-
     class Meta:
         model = Article
-        fields = ['id', 'title', 'abstract', 'publication_date', 'main_text', 'authors', 'tags']
+        fields = [
+            'id',
+            'title',
+            'abstract',
+            'publication_date',
+            'main_text',
+            'authors',
+            'tags'
+        ]
         read_only_fields = ['id']
 
-
     def create(self, validated_data):
-        print(f"[Serializer] In create() - Request user: {self.context['request'].user}")
         authors = validated_data.pop('authors', [])
         tags = validated_data.pop('tags', [])
         article = Article.objects.create(**validated_data)

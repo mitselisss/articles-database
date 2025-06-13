@@ -6,9 +6,13 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class Tag(models.Model):
     """Tag model."""
-    name = models.CharField(max_length=255, unique=True, default="Tag name to be added")
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        default="Tag name to be added")
 
     class Meta:
         ordering = ['id']
@@ -21,7 +25,11 @@ class Comment(models.Model):
     """Commend model."""
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
-    article = models.ForeignKey('Article', on_delete=models.CASCADE, related_name='comments', null=True)
+    article = models.ForeignKey(
+        'Article',
+        on_delete=models.CASCADE,
+        related_name='comments',
+        null=True)
 
     class Meta:
         ordering = ['id']

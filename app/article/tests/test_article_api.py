@@ -59,7 +59,7 @@ class PublicArticleApiTest(TestCase):
         create_article(user, title='Article 1')
         create_article(user, title='Article 2')
 
-        res =  self.client.get(ARTICLES_LIST_URL)
+        res = self.client.get(ARTICLES_LIST_URL)
         articles = Article.objects.all()
         serializer = ArticleSerializer(articles, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -83,7 +83,7 @@ class PublicArticleApiTest(TestCase):
         create_article(user2, title='Article 3')
         create_article(user2, title='Article 4')
 
-        res =  self.client.get(ARTICLES_LIST_URL, {'authors': user1.id})
+        res = self.client.get(ARTICLES_LIST_URL, {'authors': user1.id})
         articles = Article.objects.filter(authors=user1)
         serializer = ArticleSerializer(articles, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -116,12 +116,29 @@ class PublicArticleApiTest(TestCase):
             email='u1@example.com',
             password='pass1234'
         )
-        create_article(user, title='Article 1', publication_date=date(2025, 6, 10))
-        create_article(user, title='Article 2', publication_date=date(2025, 6, 10))
-        create_article(user, title='Article 3', publication_date=date(2025, 5, 10))
-        create_article(user, title='Article 4', publication_date=date(2025, 4, 10))
+        create_article(
+            user,
+            title='Article 1',
+            publication_date=date(2025, 6, 10)
+        )
+        create_article(
+            user,
+            title='Article 1',
+            publication_date=date(2025, 6, 10)
+        )
+        create_article(
+            user,
+            title='Article 1',
+            publication_date=date(2025, 5, 10)
+        )
+        create_article(
+            user,
+            title='Article 1',
+            publication_date=date(2025, 4, 10)
+        )
 
-        res =  self.client.get(ARTICLES_LIST_URL, {'publication_date': date(2025, 6, 10)})
+        res = self.client.get(
+            ARTICLES_LIST_URL, {'publication_date': date(2025, 6, 10)})
         articles = Article.objects.filter(publication_date=date(2025, 6, 10))
         serializer = ArticleSerializer(articles, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -140,7 +157,7 @@ class PublicArticleApiTest(TestCase):
             abstract="Deep research",
             main_text="Neuroscience is evolving")
 
-        res =  self.client.get(ARTICLES_LIST_URL, {'search': 'neuroscience'})
+        res = self.client.get(ARTICLES_LIST_URL, {'search': 'neuroscience'})
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -164,7 +181,8 @@ class PrivateArticleApiTest(TestCase):
         }
         res = self.client.post(ARTICLES_LIST_URL, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(Article.objects.filter(authors=self.user, title=payload['title']).exists())
+        self.assertTrue(Article.objects.filter(
+            authors=self.user, title=payload['title']).exists())
 
     def test_update_own_article(self):
         """Test authorized update of article."""
@@ -173,11 +191,16 @@ class PrivateArticleApiTest(TestCase):
         payload = {'title': 'Updated title'}
         res = self.client.patch(url, payload)
         article.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(article.title, payload['title'])
 
     def test_update_other_user_article_error(self):
         """Test unauthorized updated of article returns error."""
-        new_user = create_user(username='other', email='other@example.com', password='pass')
+        new_user = create_user(
+            username='other',
+            email='other@example.com',
+            password='pass'
+        )
         article = create_article(authors=new_user)
         url = reverse('article:article-detail', args=[article.id])
         res = self.client.patch(url, {'title': 'Hacked'})
@@ -193,7 +216,11 @@ class PrivateArticleApiTest(TestCase):
 
     def test_delete_other_user_article_error(self):
         """Test unauthorized deletion of article returns error."""
-        new_user = create_user(username='other', email='other@example.com', password='pass')
+        new_user = create_user(
+            username='other',
+            email='other@example.com',
+            password='pass'
+        )
         article = create_article(authors=new_user)
         url = reverse('article:article-detail', args=[article.id])
         res = self.client.delete(url)
@@ -208,7 +235,8 @@ class PrivateArticleApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['title'], article.title)
         self.assertEqual(res.data['abstract'], article.abstract)
-        self.assertEqual(res.data['publication_date'], str(article.publication_date))
+        self.assertEqual(
+            res.data['publication_date'], str(article.publication_date))
 
 
 class ArticleDownloadCSVTests(TestCase):
@@ -221,10 +249,13 @@ class ArticleDownloadCSVTests(TestCase):
         self.article = create_article(authors=self.user)
 
     def test_download_csv_returns_csv_file(self):
-        """Test downloading article list as CSV works and returns correct content type."""
+        """Test downloading article as CSV."""
         res = self.client.get(ARTICLE_DOWNLOAD_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res['Content-Type'], 'text/csv')
-        self.assertIn('attachment; filename="articles.csv"', res['Content-Disposition'])
+        self.assertIn(
+            'attachment; filename="articles.csv"',
+            res['Content-Disposition']
+        )
         self.assertIn('Sample Title', res.content.decode())

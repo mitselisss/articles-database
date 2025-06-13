@@ -101,21 +101,27 @@ class CommentModelTest(TestCase):
     """Test for Comment model."""
     def test_create_comment(self):
         """Test creating a comment."""
-        user = get_user_model().objects.create_user('tester', 'tester@test.com', 'pass')
+        user = get_user_model().objects.create_user(
+            'tester', 'tester@test.com', 'pass')
         article = Article.objects.create(
             title='Test Article',
             abstract='Test abstract',
             publication_date=date.today()
         )
         article.authors.set([user])
-        comment = Comment.objects.create(author=user, article=article, content='Nice one!')
+        comment = Comment.objects.create(
+            author=user,
+            article=article,
+            content='Nice one!'
+        )
         self.assertEqual(str(comment), 'Nice one!')
         self.assertEqual(comment.author, user)
         self.assertEqual(comment.article, article)
 
     def test_update_comment(self):
         """Test updating a comment."""
-        user = get_user_model().objects.create_user('tester', 'tester@test.com', 'pass')
+        user = get_user_model().objects.create_user(
+            'tester', 'tester@test.com', 'pass')
         comment = Comment.objects.create(author=user, content='original')
         comment.content = 'updated'
         comment.save()
@@ -123,7 +129,8 @@ class CommentModelTest(TestCase):
 
     def test_delete_comment(self):
         """Test deleting a comment."""
-        user = get_user_model().objects.create_user('tester', 'tester@test.com', 'pass')
+        user = get_user_model().objects.create_user(
+            'tester', 'tester@test.com', 'pass')
         comment = Comment.objects.create(author=user, content='ToDelete')
         comment_id = comment.id
         comment.delete()
@@ -136,5 +143,8 @@ class CommentModelTest(TestCase):
             email='john@example.com',
             password='pass1234'
         )
-        comment = Comment.objects.create(content='this is a string!', author=user)
+        comment = Comment.objects.create(
+            content='this is a string!',
+            author=user
+        )
         self.assertEqual(str(comment), 'this is a string!')

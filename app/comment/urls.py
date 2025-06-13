@@ -7,6 +7,14 @@ from comment import views
 app_name = 'comment'
 
 urlpatterns = [
-    path('', views.CommentListCreateView.as_view(), name='comment-list'),
-    path('<int:pk>/', views.CommentDetailView.as_view(), name='comment-detail'),
+    path(
+        '',
+        views.CommentListCreateView.as_view(),
+        name='comment-list'
+    ),
+    path(
+        '<int:pk>/',
+        views.CommentDetailView.as_view(),
+        name='comment-detail'
+    ),
 ]

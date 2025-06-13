@@ -60,12 +60,28 @@ class PublicCommentApiTests(TestCase):
 
     def test_list_comments(self):
         """Test everyone can list comments."""
-        user = create_user(username='user1', email='user1@example.com', password='password1234')
+        user = create_user(
+            username='user1',
+            email='user1@example.com',
+            password='password1234'
+        )
         article = create_article(authors=user)
-        other_user = create_user(username='user2', email='user2@example.com', password='password1234')
-        create_comment(author=user, article=article, content='content1')
-        create_comment(author=other_user, article=article, content='content2')
-        res =  self.client.get(COMMENT_LIST_URL)
+        other_user = create_user(
+            username='user2',
+            email='user2@example.com',
+            password='password1234'
+        )
+        create_comment(
+            author=user,
+            article=article,
+            content='content1'
+        )
+        create_comment(
+            author=other_user,
+            article=article,
+            content='content2'
+        )
+        res = self.client.get(COMMENT_LIST_URL)
         comments = Comment.objects.all()
         serializer = CommentSerializer(comments, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -93,7 +109,8 @@ class PrivateTagApiTests(TestCase):
         res = self.client.post(COMMENT_LIST_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-        self.assertTrue(Comment.objects.filter(content=payload['content']).exists())
+        self.assertTrue(Comment.objects.filter(
+            content=payload['content']).exists())
 
     def test_delete_own_comment(self):
         """Test that user can delete their own comment."""
@@ -109,7 +126,11 @@ class PrivateTagApiTests(TestCase):
     def test_cannot_delete_other_users_comment(self):
         """Test that users cannot delete someone else's comment."""
         article = create_article(authors=self.user)
-        other_user = create_user(username='user2', email='user2@example.com', password='pass')
+        other_user = create_user(
+            username='user2',
+            email='user2@example.com',
+            password='pass'
+        )
         comment = create_comment(article=article, author=other_user)
         url = reverse('comment:comment-detail', args=[comment.id])
 
@@ -121,7 +142,11 @@ class PrivateTagApiTests(TestCase):
     def test_update_own_comment(self):
         """Test that a user can update their own comment."""
         article = create_article(authors=self.user)
-        comment = create_comment(article=article, author=self.user, content='Original content')
+        comment = create_comment(
+            article=article,
+            author=self.user,
+            content='Original content'
+        )
         url = reverse('comment:comment-detail', args=[comment.id])
         payload = {'content': 'Updated content'}
         res = self.client.patch(url, payload)
@@ -132,12 +157,19 @@ class PrivateTagApiTests(TestCase):
     def test_cannot_update_other_users_commment(self):
         """Test that a user cannot update another user's comment."""
         article = create_article(authors=self.user)
-        other_user = create_user(username='user2', email='user2@example.com', password='password1234')
-        comment = create_comment(author=other_user, article=article, content='original')
+        other_user = create_user(
+            username='user2',
+            email='user2@example.com',
+            password='password1234'
+        )
+        comment = create_comment(
+            author=other_user,
+            article=article,
+            content='original'
+        )
         url = reverse('comment:comment-detail', args=[comment.id])
         payload = {'content': 'updated'}
         res = self.client.patch(url, payload)
         comment.refresh_from_db
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
         self.assertNotEqual(comment.content, payload['content'])
-
