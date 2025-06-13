@@ -12,8 +12,10 @@ After this command the web app is ready at:
 
 [127.0.0.1:8000/admin/](127.0.0.1:8000/admin/)
 
-but a superuser must be made via the command:
+But a superuser must be made via the command:
+
 ```sudo docker compose run --rm sh -c "python manage.py createsuperuser"```
+
 and follow the instructions.
 
 The 127.0.0.1:8000/api/docs/ page is the swagger where a user can interact with the app.
